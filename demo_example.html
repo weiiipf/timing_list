@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>源时间轴</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        body {
+            background: #fff;
+            opacity: 0.5;
+        }
+        #timeline {
+            margin: 0 auto;
+            width: 300px;
+            height: 100px;
+        }
+
+        #timeline ul {
+            border-left: 3px solid #0066ff;
+            width: 300px;
+            margin: 20px;
+            position: relative;
+            /* overflow: hidden; */
+        }
+        #timeline ul li {
+            width: 300px;
+            height: 150px;
+            display: flex;
+            margin-top: 10px;
+            animation: move 0.5s;
+            display: none;
+        }
+        /* .start-box span{
+            width: 6px;
+            height: 6px;
+            background: blue;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            position: absolute;
+            margin: 0 46px;
+        } */
+        #timeline ul li span {
+            width: 6px;
+            height: 6px;
+            background: red;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            position: absolute;
+            margin-left: -6px;
+            top: 65px;
+            left: -12px;
+            /* z-index: 1000; */
+        }
+        #timeline ul li .content .trangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-top: 10px solid transparent;
+            border-right:  10px solid #000;
+            left: -20px;
+            top: 60px;
+            /* display: none; */
+        }
+        #timeline ul li .year {
+            width: 100px;
+            height: 140px;
+            /* padding-top: 20px; */
+            display: flex;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            left: -110px;
+        }
+        #timeline ul li .year div {
+            position: absolute;
+            right: 0;
+        }
+        #timeline ul li .content {
+            position: absolute;
+            left: 10px;
+            width: 300px;
+            height: 150px;
+            border: 1px solid black;
+            border-radius: 5px;
+            /* text-align: center; */
+            vertical-align: middle;
+        }
+        #timeline ul li .content div {
+            height: 150px;
+            line-height: 150px;
+            word-wrap: break-word;
+        }
+        @keyframes move{
+            from {
+                transform:rotate(220deg) scale(0.5);
+            }
+            to {
+                transform:rotate(0deg) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="timeline">
+        <!-- <div class="start-box">
+            <span></span>
+        </div> -->
+        <ul id="time">
+            <!-- <li>
+                <div class="year">
+                    <div>
+                        2017年
+                    </div>
+                </div>
+                <div class="content">
+                    <span></span>
+                    <div class="trangle"></div>
+                    <div>
+                      text  
+                    </div>
+                    
+                </div>
+            </li>
+            <li>
+                <div class="year">
+                    <div>
+                       2018年 
+                    </div>
+                    
+                </div>
+                <div class="content">
+                    <span></span>
+                    <div class="trangle"></div>
+                    <div>
+                        text
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="year">
+                    <div>
+                        2019年 
+                    </div>
+                </div>
+                <div class="content">
+                    <span></span>
+                    <div class="trangle"></div>
+                    <div>
+                        text
+                    </div>
+                </div>
+            </li> -->
+        </ul>
+    </div>
+    <script src="./jquery.js"></script>
+    <script>
+        var data = [
+            {
+                year: 2017,
+                message: 'text',
+            },
+            {
+                year: 2018,
+                message: 'text',
+            },
+            {
+                year: 2019,
+                message: 'text',
+            },
+            {
+                year: 2020,
+                message: 'text',
+            },
+            {
+                year: 2021,
+                message: 'text',
+            },
+            {
+                year: 2022,
+                message: 'text',
+            }
+        ];
+        function renderDom(data) {
+            return $('<li><div class="year"><div>' + data.year + '年</div></div><div class="content"><span></span><div class="trangle"></div><div>' + data.message + '</div></div></li>');
+        }
+        for (var i = 0; i < data.length; i ++) {
+            $('#time').append(renderDom(data[i]));
+        }
+        // $('ul li:lt(4)').show();
+        var oLi = $('ul li');
+        $('#time').height(0);
+        var timer = window.setInterval(function () {
+            var height = $('#time').height();
+            height += 10;
+            var index = parseInt(height/60);
+            console.log(index);
+            // 一个一个展示li
+            if (index > 0 && height < $(window).height() ) {
+                $('ul li:lt(' + (index / 2) + ')').show();
+            }
+            // 判断时间轴的高度
+            if (height > (oLi.length * 150) + (oLi.length - 1) * 10) {
+                clearInterval(timer);
+            }
+            $('#time').height(height);
+        }, 100)
+
+        // 滑动滚轮的时候 判断是否出现下面一个li
+        $(window).scroll(function(){
+            // console.log('scroll', $(window).height(), $(this).scrollTop())
+			var top = $(this).scrollTop() + $(window).height();
+			$("ul li").each(function(){
+				var index = $(this).index() + 2;
+				var height = $(this).offset().top + 300;//获取l最后一个li的底部与浏览器窗口顶部的距离 
+                console.log(index, top, height)
+				if (top < height){
+					$("ul li:lt("+index+")").show();
+					return false;
+				}
+			});
+		});//鼠标滚轮事件
+    </script>
+</body>
+</html>
